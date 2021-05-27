@@ -73,5 +73,9 @@ public class Assicurati {
         }
         return this.assicurato;
     }
+    
+    public void setAssicurato(List<Assicurato> assicurato) {
+        this.assicurato = assicurato;
+    }
 
 }

@@ -1,11 +1,18 @@
 package it.prova.gestioneassicurato;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -35,6 +42,7 @@ public class GestioneassicuratoApplication implements CommandLineRunner {
 	        	System.out.println(app.getNome()+" "+ app.getCognome()+ " "+ app.getNuoviSinistri()+ "  "+ app.getDataNascita()+ app.getCodiceFiscale());
 	        	if(app.getNuoviSinistri().intValue()>2) {
 	        		System.out.println("non va bene");
+	        		
 	        	}else {
 	        		Assicurato assicuratoModel = assicuratoService.cercaPerNomeECognome(app.getNome(), app.getCognome());
 	        		if(assicuratoModel==null) {
@@ -71,6 +79,46 @@ public class GestioneassicuratoApplication implements CommandLineRunner {
         
         return assicuratiModel;
         
+	}
+	
+	private void doMarshall(List<Assicurato> assicurati) throws Exception{
+		
+		//CONVERTO DA LIST MODEL A LIST POJO
+		List<it.prova.gestioneassicurato.generated.Assicurato> assicuratiPojo= 
+				new ArrayList<it.prova.gestioneassicurato.generated.Assicurato>();
+		for(Assicurato assItemApp : assicurati) {
+			it.prova.gestioneassicurato.generated.Assicurato assicuratoDaCaricare= 
+					new it.prova.gestioneassicurato.generated.Assicurato();
+			assicuratoDaCaricare.setNome(assItemApp.getNome());
+			assicuratoDaCaricare.setCognome(assItemApp.getCognome());
+			assicuratoDaCaricare.setNuovisinistri(assItemApp.getNuoviSinistri());
+			
+			//PER LE DATE 
+			 GregorianCalendar c = new GregorianCalendar();
+	         XMLGregorianCalendar xmlGregorianCalendar = null;
+	         c.setTime(assItemApp.getDataNascita());
+	         try {
+	             xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+	         } catch (DatatypeConfigurationException e) {
+	             e.printStackTrace();
+	         }
+	        assicuratoDaCaricare.setDatanascita(xmlGregorianCalendar);
+	        assicuratiPojo.add(assicuratoDaCaricare);
+			
+		}
+		//FINE CONVERSIONE
+		
+		//CONVERTO IN XML E INVIO AL FILE 
+		
+		 BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("scartati.xml"));
+	        JAXBContext jContext = JAXBContext.newInstance(Assicurati.class);
+	        Marshaller marshaller = jContext.createMarshaller();
+	        Assicurati assicuratiJAXB = new Assicurati();
+	        assicuratiJAXB.setAssicurato(assicuratiPojo);
+	        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+	        marshaller.marshal(assicuratiJAXB, bufferedWriter);
+	        
+	        
 	}
 
 }

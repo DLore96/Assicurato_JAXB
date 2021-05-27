@@ -1,0 +1,19 @@
+<assicurati>
+
+	<assicurato>
+		<nome>Lorenzo</nome>
+		<cognome>Gallozzi</cognome>
+		<datanascita>1996-06-09</datanascita>
+		<nuovisinistri>1</nuovisinistri>
+		<codicefiscale>GLLLNZ9609A123E</codicefiscale>
+	</assicurato>
+
+	<assicurato>
+		<nome>Prova</nome>
+		<cognome>prova</cognome>
+		<datanascita>2000-01-10</datanascita>
+		<nuovisinistri>3</nuovisinistri>
+		<codicefiscale>PRVPRV100</codicefiscale>
+	</assicurato>
+
+</assicurati>
